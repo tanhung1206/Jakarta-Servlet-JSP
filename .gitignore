@@ -1,0 +1,48 @@
+# Maven
+target/
+!.mvn/wrapper/maven-wrapper.jar
+.mvn/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+
+# Eclipse/NetBeans
+.classpath
+.project
+.settings/
+.nb-gradle/
+.nb-configuration.xml
+
+# Logs
+*.log
+*.out
+*.err
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Miscellaneous
+*.class
+*.war
+*.ear
+*.jar
+*.swp
+*.swo
+
+# Other IDEs
+.vscode/
+
+# Ignore node_modules if using front-end libraries
+node_modules/
+
+# Ignore package-lock.json or yarn.lock if applicable
+package-lock.json
+yarn.lock
