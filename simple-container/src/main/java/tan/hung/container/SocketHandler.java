@@ -19,12 +19,12 @@ public class SocketHandler extends Thread {
 
     public void run() {
         BufferedReader in = null;
-        PrintWriter out = null;
         try {
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            out = new PrintWriter(socket.getOutputStream());
-            Request request=new Request(in);
-            if(!request.parse()){
+
+            Request request = new Request(in);
+            if (!request.parse()) {
+                PrintWriter out = new PrintWriter(socket.getOutputStream());
                 out.println("HTTP/1.1 505 Internal Server Error");
                 out.println("Content-Type: text/plain");
 
@@ -34,26 +34,35 @@ public class SocketHandler extends Thread {
                 out.println("Can't process your request");
                 out.println("</body></html>");
                 out.flush();
-            }
-            System.out.println("Method: "+request.getMethod());
-            System.out.println("Path: "+request.getPath());
-            request.getRequestParameters().forEach((key,value)-> System.out.println("Param Name: "+key+",param value: "+value));
-            request.getHeaders().forEach((key,value)-> System.out.println("Header Name: "+key+",header value: "+value));
-            out.println("HTTP/1.1 200 OK");
-            out.println("Content-Type: text/html");
-            out.println();
+            } else {
+                HttpServlet servlet=handlers.get(request.getPath());
+                if(servlet==null){
+                    PrintWriter out = new PrintWriter(socket.getOutputStream());
+                    out.println("HTTP/1.1 404 Not Found");
+                    out.println("Content-Type: text/html");
+                    out.println();
 
-            out.println("<html><body>");
-            out.println("Current Time: " + LocalDateTime.now());
-            out.println("</body></html>");
-            out.flush();
+                    out.println("<html><body>");
+                    out.println("Not Servlet handle your request!!!");
+                    out.println("</body></html>");
+                    out.flush();
+                }
+                else{
+                    Response response=new Response(socket.getOutputStream());
+                    PrintWriter out = response.getPrintWriter();
+                    out.println("HTTP/1.1 200 OK");
+                    out.println("Content-Type: text/html");
+                    out.println();
+                    servlet.service(request,response);
+                    out.flush();
+                }
+
+            }
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
             try {
                 socket.close();
-                out.close();
-                in.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }

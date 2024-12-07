@@ -23,7 +23,7 @@ public class SimpleWebContainer {
         ServerSocket server = new ServerSocket(port);
         while (true) {
             Socket socket = server.accept();
-            Thread socketHandler = new SocketHandler(socket,handlers);
+            Thread socketHandler = new SocketHandler(socket, handlers);
             socketHandler.start();
         }
 
@@ -32,10 +32,11 @@ public class SimpleWebContainer {
     public static void main(String[] args) throws IOException, Exception {
         SimpleWebContainer container = new SimpleWebContainer(8888, "config.properties");
         container.loadPropertiesFile();
-        for(Map.Entry<String,HttpServlet> tmp:container.handlers.entrySet()){
-            System.out.println(tmp.getKey());
-            tmp.getValue().goGet();
-        }
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+            public void run() {
+                container.handlers.forEach((url, servlet) -> servlet.destroy());
+            }
+        });
         container.start();
 
     }
@@ -64,9 +65,9 @@ public class SimpleWebContainer {
         Properties properties = new Properties();
         properties.load(input);
         properties.forEach((key, value) -> {
-            HttpServlet servlet=getServletInstance((String) value);
+            HttpServlet servlet = getServletInstance((String) value);
             servlet.init();
-            handlers.put((String) key,servlet);
+            handlers.put((String) key, servlet);
         });
     }
 

@@ -16,6 +16,10 @@ public class Request {
         this.in = in;
     }
 
+    public String getRequestParameter(String key) {
+        return requestParameters.get(key);
+    }
+
     public String getPath() {
         return path;
     }
@@ -59,6 +63,14 @@ public class Request {
             headers.put(headerPair[0], headerPair[1]);
         }
 
+        if("POST".equals(method)){
+            StringBuilder payload=new StringBuilder();
+            while(in.ready()){
+                payload.append((char)in.read());
+            }
+            parseRequestParams(payload.toString());
+
+        }
         //TODO parse POST request body info requestParameters
         return true;
     }
