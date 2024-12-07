@@ -10,11 +10,11 @@ import java.util.Map;
 
 public class SocketHandler extends Thread {
     private Socket socket;
-    private Map<String,HttpServlet>handlers;
+    private Map<String, HttpServlet> handlers;
 
-    public SocketHandler(Socket socket, Map<String,HttpServlet> handlers) {
+    public SocketHandler(Socket socket, Map<String, HttpServlet> handlers) {
         this.socket = socket;
-        this.handlers=handlers;
+        this.handlers = handlers;
     }
 
     public void run() {
@@ -22,12 +22,23 @@ public class SocketHandler extends Thread {
         PrintWriter out = null;
         try {
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            String line = in.readLine();
-            while (!line.isEmpty()) {
-                System.out.println(line);
-                line = in.readLine();
-            }
             out = new PrintWriter(socket.getOutputStream());
+            Request request=new Request(in);
+            if(!request.parse()){
+                out.println("HTTP/1.1 505 Internal Server Error");
+                out.println("Content-Type: text/plain");
+
+                out.println();
+
+                out.println("<html><body>");
+                out.println("Can't process your request");
+                out.println("</body></html>");
+                out.flush();
+            }
+            System.out.println("Method: "+request.getMethod());
+            System.out.println("Path: "+request.getPath());
+            request.getRequestParameters().forEach((key,value)-> System.out.println("Param Name: "+key+",param value: "+value));
+            request.getHeaders().forEach((key,value)-> System.out.println("Header Name: "+key+",header value: "+value));
             out.println("HTTP/1.1 200 OK");
             out.println("Content-Type: text/html");
             out.println();

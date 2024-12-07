@@ -2,7 +2,7 @@ package tan.hung.container;
 
 public class HttpServlet {
     public void init(){
-        System.out.println("HttpServlet init");
+        System.out.println("HttpServlet init default");
     }
     public void service(){ // TODO: Request,Response object as params
 
