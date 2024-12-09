@@ -24,6 +24,6 @@ public class SignupServlet extends HttpServlet {
         User user = new User(username, password, email);
         req.getSession().setAttribute("newUser",user);
 //        req.getRequestDispatcher("signup.jsp").forward(req, resp);
-        resp.sendRedirect("/signup.jsp");
+        resp.sendRedirect("/signup");
     }
 }
